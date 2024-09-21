@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-part4-book
+  labels:
+    app: project-part4-book
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-part4-book
+  template:
+    metadata:
+      labels:
+        app: project-part4-book
+    spec:
+      containers:
+      - name: project-part4-book
+        image: task9.azurecr.io/book-catalog:latest
+        imagePullPolicy: Always 
+        ports:
+        - containerPort: 8000
+      imagePullSecrets:       
+      - name: acr-secret      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-part4-service-book
+spec:
+  selector:
+    app: project-part4-book
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-part4-inventory
+  labels:
+    app: project-part4-inventory
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-part4-inventory
+  template:
+    metadata:
+      labels:
+        app: project-part4-inventory
+    spec:
+      containers:
+      - name: project-part4-inventory
+        image: task9.azurecr.io/inventory-management:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+      imagePullSecrets:           
+      - name: acr-secret         
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-part4-service-inventory
+spec:
+  selector:
+    app: project-part4-inventory
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8001
+  type: LoadBalancer
