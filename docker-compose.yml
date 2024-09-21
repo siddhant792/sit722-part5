@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  app1:
+    build:
+      context: ./book_catalog
+      dockerfile: Dockerfile
+    image: book-catalog
+
+  app2:
+    build:
+      context: ./inventory_management
+      dockerfile: Dockerfile
+    image: inventory-management
