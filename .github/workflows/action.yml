@@ -7,7 +7,7 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Apply
+    name: Terraform Plan & Apply (If Needed)
     runs-on: ubuntu-latest
 
     steps:
@@ -29,15 +29,29 @@ jobs:
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
     - name: Terraform Plan
+      id: tf_plan  # Save the plan result for later use
       working-directory: ./scripts/terraform
-      run: terraform plan
+      run: terraform plan -out=plan.out
       env:
         ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
-    - name: Terraform Apply
+    - name: Check if Plan Contains Changes
+      id: tf_changes
+      run: |
+        if terraform show -json plan.out | jq .resource_changes | grep -q 'null'; then
+          echo "No changes detected"
+          echo "no_changes=true" >> $GITHUB_ENV
+        else
+          echo "Changes detected"
+          echo "no_changes=false" >> $GITHUB_ENV
+        fi
+      working-directory: ./scripts/terraform
+
+    - name: Apply Terraform (If Needed)
+      if: env.no_changes == 'false'  # Apply only if there are changes
       working-directory: ./scripts/terraform
       run: terraform apply -auto-approve
       env:
@@ -63,7 +77,7 @@ jobs:
       run: ./scripts/build-image.sh
     
     - name: Make push-image.sh executable
-      run: ./scripts/push-image.sh
+      run: chmod +x ./scripts/push-image.sh
 
     - name: Push Docker images
       run: ./scripts/push-image.sh
@@ -75,8 +89,8 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
 
-    - name: Make deply.sh executable
-      run: ./scripts/deploy.sh
+    - name: Make deploy.sh executable
+      run: chmod +x ./scripts/deploy.sh
 
     - name: Deploy to Kubernetes
       run: ./scripts/deploy.sh
@@ -89,7 +103,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Make delete.sh executable
-      run: ./scripts/delete.sh
+      run: chmod +x ./scripts/delete.sh
 
     - name: Delete Kubernetes resources
       run: ./scripts/delete.sh
