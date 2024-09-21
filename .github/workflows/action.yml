@@ -80,6 +80,9 @@ jobs:
       run: chmod +x ./scripts/push-image.sh
 
     - name: Push Docker images
+      env:
+        ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+        ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
       run: ./scripts/push-image.sh
 
   deploy:
