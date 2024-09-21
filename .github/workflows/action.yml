@@ -92,25 +92,6 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
 
-    - name: Set up Azure CLI
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.20.0
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Set up AKS credentials for kubectl
-      run: |
-        az aks get-credentials --resource-group task9-rg --name task9
-      env:
-        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
     - name: Make deploy.sh executable
       run: chmod +x ./scripts/deploy.sh
 
