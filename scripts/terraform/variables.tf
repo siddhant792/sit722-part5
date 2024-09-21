@@ -18,18 +18,26 @@ variable "dns_prefix" {
   default = "your-aks-dns-prefix"
 }
 
-variable "subscription_id" {
-  type = string
-}
-
 variable "client_id" {
-  type = string
+  description = "Azure client ID"
+  type        = string
+  default     = ""
 }
 
 variable "client_secret" {
-  type = string
+  description = "Azure client secret"
+  type        = string
+  default     = ""
+}
+
+variable "subscription_id" {
+  description = "Azure subscription ID"
+  type        = string
+  default     = ""
 }
 
 variable "tenant_id" {
-  type = string
+  description = "Azure tenant ID"
+  type        = string
+  default     = ""
 }
