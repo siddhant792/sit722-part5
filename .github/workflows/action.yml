@@ -7,7 +7,7 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Plan & Apply (If Needed)
+    name: Terraform Plan & Apply
     runs-on: ubuntu-latest
 
     steps:
